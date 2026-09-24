@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% block content %}
+<div class="hero"><h1>Kya khana hai aaj? 😋</h1><p>Restaurant, cuisine ya dish ka naam search karo: biryani, pizza, dosa...</p>
+<form class="bar" method="get">
+ <input name="q" placeholder="Search restaurant or dish..." value="{{ q }}" style="flex:3 1 240px">
+ <select name="sort"><option value="rating" {{ 'selected' if sort=='rating' }}>Top rated</option>
+ <option value="eta" {{ 'selected' if sort=='eta' }}>Fastest delivery</option>
+ <option value="name" {{ 'selected' if sort=='name' }}>A to Z</option></select>
+ <select name="minr"><option value="">Any rating</option><option value="4" {{ 'selected' if minr=='4' }}>4.0+</option>
+ <option value="4.5" {{ 'selected' if minr=='4.5' }}>4.5+</option></select>
+ <input type="hidden" name="cuisine" value="{{ cuisine }}"><button class="btn" style="background:#1f2937">Search</button>
+</form></div>
+<a class="chip {{ 'on' if not cuisine }}" href="/">All</a>
+{% for c in cuisines %}<a class="chip {{ 'on' if c == cuisine }}" href="/?cuisine={{ c }}">{{ c }}</a>{% endfor %}
+<p class="muted">{{ restaurants|length }} restaurants mile</p>
+<div class="grid">
+{% for r in restaurants %}
+ <a class="card" href="/restaurant/{{ r.id }}"><div class="emoji">{{ r.emoji }}</div>
+ <h3 style="margin:6px 0">{{ r.name }}</h3><div class="muted">{{ r.cuisine }}</div>
+ <div style="margin-top:8px"><span class="pill">★ {{ '%.1f' % r.rating }}</span>
+ <span class="muted"> {{ r.reviews|length }} reviews · {{ r.eta }} min</span></div></a>
+{% else %}<p>Koi restaurant nahi mila. Doosra naam try karo.</p>{% endfor %}
+</div>{% endblock %}

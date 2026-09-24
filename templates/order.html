@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block content %}
+<h2>Order #{{ order.id }} · {{ order.restaurant.name }}</h2>
+{% set cur = statuses.index(order.status) %}
+<div class="steps noprint">{% for s in statuses %}<div class="step {{ 'done' if loop.index0 <= cur }}">{{ s }}</div>{% endfor %}</div>
+<div class="card"><div class="row"><div><b>🧾 Invoice FH-{{ '%05d' % order.id }}</b>
+<div class="muted">{{ order.created.strftime('%d %b %Y, %I:%M %p') if order.created }} · {{ order.user.name }}</div></div><b>FoodHub by Soni</b></div>
+{% for i in order.items %}<div class="row"><span>{{ i.name }} × {{ i.qty }} <span class="muted">(₹{{ i.price }} each)</span></span><span>₹{{ i.price * i.qty }}</span></div>{% endfor %}
+{% if order.bill %}{% set b = order.bill %}
+<div class="row"><span>Item total</span><span>₹{{ b.subtotal }}</span></div>
+{% if b.discount %}<div class="row"><span>Discount ({{ b.coupon }})</span><span>− ₹{{ b.discount }}</span></div>{% endif %}
+<div class="row"><span>Delivery fee</span><span>{{ '₹' ~ b.fee if b.fee else 'FREE' }}</span></div>
+<div class="row"><span>GST (5%)</span><span>₹{{ b.tax }}</span></div>{% endif %}
+<div class="row"><b>Grand total</b><b>₹{{ order.total }}</b></div>
+<p class="muted">📍 {{ order.address }} · 📞 {{ order.phone }} · Cash on Delivery</p></div>
+<p><button class="btn noprint" onclick="window.print()">🖨️ Print / Save as PDF</button></p>{% endblock %}

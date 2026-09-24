@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% block content %}
+<h2>🛒 Your Cart</h2>
+{% if not lines %}<p>Cart khali hai. <a href="/">Restaurants dekho</a></p>{% else %}
+<div class="card">
+{% for l in lines %}<div class="row"><span>{{ l.dish.emoji }} {{ l.dish.name }}<div class="muted">₹{{ l.dish.price }} each</div></span>
+ <span class="qty"><form method="post" action="/cart/remove/{{ l.dish.id }}"><button>−</button></form><b>{{ l.qty }}</b>
+ <form method="post" action="/cart/add/{{ l.dish.id }}"><button>+</button></form></span><b>₹{{ l.total }}</b></div>{% endfor %}
+</div>
+<div class="card" style="margin-top:14px"><h3 style="margin-top:0">Coupon</h3>
+{% if coupon %}<p>✅ <b>{{ coupon }}</b> applied {% if bill.discount == 0 %}(min order poora nahi){% endif %}
+<form method="post" action="/cart/coupon/remove" style="display:inline"><button class="btn o">Remove</button></form></p>
+{% else %}<form method="post" action="/cart/coupon" class="bar"><input name="code" placeholder="Coupon code" required><button class="btn">Apply</button></form>{% endif %}
+<p class="muted">{% for code, c in coupons.items() %}<b>{{ code }}</b>: {{ c[0] }}% off (max ₹{{ c[1] }}, min ₹{{ c[2] }}) &nbsp; {% endfor %}</p></div>
+<div class="card" style="margin-top:14px"><h3 style="margin-top:0">Bill details</h3>
+<div class="row"><span>Item total</span><span>₹{{ subtotal }}</span></div>
+{% if bill.discount %}<div class="row"><span>Discount</span><span style="color:#16a34a">− ₹{{ bill.discount }}</span></div>{% endif %}
+<div class="row"><span>Delivery fee</span><span>{{ '₹' ~ bill.fee if bill.fee else 'FREE' }}</span></div>
+<div class="row"><span>GST (5%)</span><span>₹{{ bill.tax }}</span></div>
+<div class="row"><b>To pay</b><b>₹{{ bill.total }}</b></div></div>
+<form class="card" method="post" action="/checkout" style="margin-top:14px">
+ <h3 style="margin-top:0">Delivery details</h3>
+ <input name="address" placeholder="Full address" required><input name="phone" placeholder="Phone number" required>
+ <p class="muted">Payment: Cash on Delivery</p><button class="btn">Place Order · ₹{{ bill.total }}</button>
+</form>{% endif %}{% endblock %}
